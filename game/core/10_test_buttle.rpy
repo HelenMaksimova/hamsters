@@ -1,54 +1,42 @@
-# 10_test_buttle.rpy
+# 10_test_battle.rpy
 
-init python:
-    def check_victory(mob: "Mob", buttle: "ButtleData"):
-        if mob.current_health <= 0:
-            buttle.defeat(mob)
-            renpy.jump("victory")
-
-
-screen buttle_choice_screen():
+screen battle_choice_screen():
     modal True
 
     vbox:
-        textbutton "[dog.name]":
-            action [Hide(), Jump("battle_dog")]
-            sensitive test_buttle.is_active(dog)
-        textbutton "[cat.name]":
-            action [Hide(), Jump("battle_cat")]
-            sensitive test_buttle.is_active(cat)
+        button:
+            style "battle_button"
+            action [Hide(), Jump("test_battle")]
 
 
-screen battle_screen(mob):
+screen battle_screen():
+    modal True
+
     vbox:
-        text "Противник: [mob.name]"
-        text "Здоровье: [mob.current_health]/[mob.max_health]"
-        textbutton "Атаковать":
+        textbutton "Выйти":
             action [
-                Function(mob.take_damage),
-                Function(check_victory, mob, test_buttle)
+                Hide(), Jump("test_battle_exploring")
             ]
 
+    grid 4 4:
+        spacing 10
+        xalign 0.5
+        yalign 0.5
 
-label artem_dream_exploring:
-    show screen buttle_choice_screen
+        for i in range(16):
+            button:
+                style "battle_button"
+                action NullAction()
+
+
+label test_battle_exploring:
+    scene bg gray_screen
+    show screen battle_choice_screen
     pause
     return
 
 
-label battle_dog:
-    show screen battle_screen(dog)
+label test_battle:
+    show screen battle_screen
     pause
     return
-
-
-label battle_cat:
-    show screen battle_screen(cat)
-    pause
-    return
-
-
-label victory:
-    hide screen battle_screen
-    "Вы победили!"
-    jump artem_dream_exploring
