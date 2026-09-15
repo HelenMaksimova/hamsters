@@ -85,7 +85,7 @@ class BattleCard:
     value: int
     image: str
     position: int | None = None
-    state: Literal["closed", "opened"] = "closed"
+    state: Literal["closed", "opened", "matched"] = "closed"
 
 
 @dataclass
@@ -94,9 +94,10 @@ class BattleGround:
     _images_map: dict[int, str] = field(default_factory=dict, init=False)
     _current_card: BattleCard | None = field(default=None, init=False)
     _game_count: int = field(default=0, init=False)
+    pending_close: bool = field(default=False, init=False)
     card_values: tuple[int, ...]
     card_images: tuple[str, ...]
-    clickable_states: set[str] = field(default_factory={"closed",})
+    clickable_states: set[str] = field(default_factory=lambda: {"closed",})
     rows_number: int = 2
     columns_number: int = 2
 
@@ -119,24 +120,32 @@ class BattleGround:
         return self.rows_number * self.columns_number
 
     @property
+    def cards(self) -> list[BattleCard]:
+        return self._cards
+
+    @property
     def game_count(self) -> int:
         return self._game_count
+
+    @property
+    def is_victory(self) -> bool:
+        return self.game_count <= 0
 
     @property
     def current_card(self) -> BattleCard | None:
         return self._current_card
 
-    def set_current_card(self, position: int):
+    def set_current_card(self, position: int) -> None:
         self._current_card = self._cards[position]
 
-    def clear_current_card(self):
+    def clear_current_card(self) -> None:
         self._current_card = None
 
     @property
     def images_map(self) -> dict[int, str]:
         return self._images_map
 
-    def _set_game_count(self):
+    def _set_game_count(self) -> None:
         self._game_count = self.cards_number // 2
 
     def _set_images_map(self) -> None:
@@ -158,7 +167,7 @@ class BattleGround:
         for idx in range(len(self._cards)):
             self._cards[idx].position = idx
 
-    def flip_card(self, position: int):
+    def flip_card(self, position: int) -> None:
         flipped_card = self._cards[position]
 
         if flipped_card.state in self.clickable_states:
@@ -166,10 +175,22 @@ class BattleGround:
 
             if not self.current_card:
                 self.set_current_card(position)
-            elif self.current_card.value != flipped_card.value:
-                self.current_card.state = "closed"
-                flipped_card.state = "closed"
-                self.clear_current_card()
-            else:
+            elif self.current_card.value == flipped_card.value:
+                self.current_card.state = "matched"
+                flipped_card.state = "matched"
                 self._game_count -= 1
                 self.clear_current_card()
+            else:
+                self.pending_close = True
+                self.clear_current_card()
+
+    def close_pending(self) -> None:
+        if self.pending_close:
+            for card in self.cards:
+                if card.state == "opened":
+                    card.state = "closed"
+            self.pending_close = False
+
+    def check_victory(self, label: str) -> None:
+        if self.is_victory:
+            renpy.jump(label)
