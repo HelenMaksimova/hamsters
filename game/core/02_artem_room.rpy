@@ -34,6 +34,7 @@ label artem_room_go_sleep():
     menu:
         'Идти спать':
             artem 'Пожалуй, пора баиньки'
+            jump test_battle_exploring
         'Пока рано ложиться':
             jump artem_room_exploring
 
