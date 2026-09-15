@@ -1,54 +1,67 @@
-# 10_test_buttle.rpy
+# 10_test_battle.rpy
 
-init python:
-    def check_victory(mob: "Mob", buttle: "ButtleData"):
-        if mob.current_health <= 0:
-            buttle.defeat(mob)
-            renpy.jump("victory")
-
-
-screen buttle_choice_screen():
+screen battle_choice_screen():
     modal True
 
     vbox:
-        textbutton "[dog.name]":
-            action [Hide(), Jump("battle_dog")]
-            sensitive test_buttle.is_active(dog)
-        textbutton "[cat.name]":
-            action [Hide(), Jump("battle_cat")]
-            sensitive test_buttle.is_active(cat)
+        button:
+            style "battle_button"
+            action [Hide(), Jump("test_battle")]
 
 
-screen battle_screen(mob):
+screen battle_screen(battle):
+    modal True
+
     vbox:
-        text "Противник: [mob.name]"
-        text "Здоровье: [mob.current_health]/[mob.max_health]"
-        textbutton "Атаковать":
+        textbutton "Выйти":
             action [
-                Function(mob.take_damage),
-                Function(check_victory, mob, test_buttle)
+                Hide(), Jump("test_battle_exploring")
             ]
 
+    grid battle.rows_number battle.columns_number:
+        spacing 10
+        xalign 0.5
+        yalign 0.5
 
-label artem_dream_exploring:
-    show screen buttle_choice_screen
-    pause
-    return
+        for i in range(battle.cards_number):
+            button:
+                style "battle_button"
+                action [Function(battle.flip_card, i), Function(battle.check_victory, "victory")]
 
+                if battle.cards[i].state in {"opened", "matched"}:
+                    background battle.cards[i].image
+                else:
+                    background "gui/[prefix_]battle_button.png"
 
-label battle_dog:
-    show screen battle_screen(dog)
-    pause
-    return
-
-
-label battle_cat:
-    show screen battle_screen(cat)
-    pause
-    return
+    if battle.pending_close:
+            timer 1.0 action Function(battle.close_pending)
 
 
 label victory:
     hide screen battle_screen
     "Вы победили!"
-    jump artem_dream_exploring
+    jump test_battle_exploring
+
+
+label test_battle_exploring:
+    scene bg gray_screen
+    show screen battle_choice_screen
+    pause
+    return
+
+
+label test_battle:
+    $ battle = BattleGround(
+        (0, 1, 2, 3),
+        (
+            "test_battle/battle_value_0.png",
+            "test_battle/battle_value_1.png",
+            "test_battle/battle_value_2.png",
+            "test_battle/battle_value_3.png",
+        ),
+        rows_number=4,
+        columns_number=4
+    )
+    show screen battle_screen(battle)
+    pause
+    return
