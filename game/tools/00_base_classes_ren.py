@@ -6,6 +6,13 @@ from typing import Self, Literal
 from random import shuffle, sample
 
 
+def toggle_inventory():
+    if renpy.get_screen("inventory"):
+        renpy.hide_screen("inventory")
+    else:
+        renpy.show_screen("inventory")
+
+
 @dataclass
 class BasePersistentData:
     _key: str = field(repr=False)

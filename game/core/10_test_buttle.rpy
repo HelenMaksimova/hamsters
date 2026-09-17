@@ -18,7 +18,7 @@ screen battle_screen(battle):
                 Hide(), Jump("test_battle_exploring")
             ]
 
-    grid battle.rows_number battle.columns_number:
+    grid battle.columns_number battle.rows_number:
         spacing 10
         xalign 0.5
         yalign 0.5

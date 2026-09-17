@@ -8,5 +8,10 @@ style paw_button:
 
 style battle_button:
     background "gui/[prefix_]battle_button.png"
-    xsize 160
-    ysize 160
+    xsize 174
+    ysize 174
+
+style inventory_slot:
+        background "gui/[prefix_]inventory_slot.png"
+        xsize 174
+        ysize 174
