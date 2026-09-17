@@ -369,6 +369,7 @@ style navigation_button:
 style navigation_button_text:
     properties gui.text_properties("navigation_button")
     font "custom_font_1.otf"
+    size 50
 
 
 ## Экран главного меню #########################################################
@@ -561,6 +562,7 @@ style game_menu_label_text:
     size 75
     color gui.accent_color
     yalign 0.5
+    font "custom_font_1.otf"
 
 style return_button:
     xpos gui.navigation_xpos
