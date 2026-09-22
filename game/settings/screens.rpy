@@ -113,7 +113,7 @@ screen say(who, what):
     ## По стандарту не показывается на варианте для мобильных устройств — мало
     ## места.
     if not renpy.variant("small"):
-        add SideImage() xalign 0.0 yalign 1.0
+        add SideImage() xalign 0.0 yalign 1.0 yoffset -50
 
 
 ## Делает namebox доступным для стилизации через объект Character.
@@ -134,6 +134,7 @@ style window:
     xfill True
     yalign gui.textbox_yalign
     ysize gui.textbox_height
+    yoffset -50
 
     background Image("gui/textbox.png", xalign=0.5, yalign=1.0)
 
@@ -240,20 +241,40 @@ screen quick_menu():
     ## Гарантирует, что оно появляется поверх других экранов.
     zorder 100
 
+    add "gui/grace.png":
+        xalign 0.5
+        yalign 1.0
+
     if quick_menu:
 
         hbox:
             style_prefix "quick"
             style "quick_menu"
 
-#            textbutton _("Назад") action Rollback()
-            textbutton _("История") action ShowMenu('history')
-#            textbutton _("Пропуск") action Skip() alternate Skip(fast=True, confirm=True)
-            textbutton _("Авто") action Preference("auto-forward", "toggle")
-#            textbutton _("Сохранить") action ShowMenu('save')
-            textbutton _("Быстрое Сохранение") action QuickSave()
-            textbutton _("Быстрая Загрузка") action QuickLoad()
-#            textbutton _("Опции") action ShowMenu('preferences')
+            button:
+                style "custom_menu_button"
+                add "gui/history.png":
+                    xalign 0.5
+                    yalign 0.5
+                action ShowMenu('history')
+            button:
+                style "custom_menu_button"
+                add "gui/save.png":
+                    xalign 0.5
+                    yalign 0.5
+                action QuickSave()
+            button:
+                style "custom_menu_button"
+                add "gui/load.png":
+                    xalign 0.5
+                    yalign 0.5
+                action QuickLoad()
+            button:
+                style "custom_menu_button"
+                add "gui/inventory.png":
+                    xalign 0.5
+                    yalign 0.5
+                action Function(inventory.toggle_inventory)
 
 
 ## Данный код гарантирует, что экран быстрого меню будет показан в игре в любое
@@ -276,6 +297,11 @@ style quick_button:
 
 style quick_button_text:
     properties gui.text_properties("quick_button")
+
+style custom_menu_button:
+    background "gui/[prefix_]menu_button.png"
+    xsize 98
+    ysize 98
 
 
 ################################################################################
@@ -342,6 +368,8 @@ style navigation_button:
 
 style navigation_button_text:
     properties gui.text_properties("navigation_button")
+    font "custom_font_1.otf"
+    size 50
 
 
 ## Экран главного меню #########################################################
@@ -399,9 +427,11 @@ style main_menu_vbox:
 
 style main_menu_text:
     properties gui.text_properties("main_menu", accent=True)
+    font "custom_font_1.otf"
 
 style main_menu_title:
     properties gui.text_properties("title")
+    font "custom_font_1.otf"
 
 style main_menu_version:
     properties gui.text_properties("version")
@@ -532,6 +562,7 @@ style game_menu_label_text:
     size 75
     color gui.accent_color
     yalign 0.5
+    font "custom_font_1.otf"
 
 style return_button:
     xpos gui.navigation_xpos
