@@ -274,7 +274,7 @@ screen quick_menu():
                 add "gui/inventory.png":
                     xalign 0.5
                     yalign 0.5
-                action Function(toggle_inventory)
+                action Function(inventory.toggle_inventory)
 
 
 ## Данный код гарантирует, что экран быстрого меню будет показан в игре в любое

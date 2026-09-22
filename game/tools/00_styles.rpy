@@ -13,5 +13,5 @@ style battle_button:
 
 style inventory_slot:
         background "gui/[prefix_]inventory_slot.png"
-        xsize 174
-        ysize 174
+        xsize 124
+        ysize 124
