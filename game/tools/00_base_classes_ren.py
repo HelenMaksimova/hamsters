@@ -6,13 +6,6 @@ from typing import Self, Literal
 from random import shuffle, sample
 
 
-def toggle_inventory():
-    if renpy.get_screen("inventory"):
-        renpy.hide_screen("inventory")
-    else:
-        renpy.show_screen("inventory")
-
-
 @dataclass
 class BasePersistentData:
     _key: str = field(repr=False)
@@ -37,54 +30,6 @@ class BasePersistentData:
 
         data.pop("_key", None)
         return cls(key, **data)
-
-
-@dataclass
-class Mob:
-    name: str
-    current_health: int = 0
-    max_health: int = 0
-
-    def restore(self) -> None:
-        self.current_health = self.max_health
-
-    def defeat(self) -> None:
-        self.current_health = 0
-
-    def take_damage(self, damage: int = 1) -> None:
-        self.current_health -= damage
-        if self.current_health < 0:
-            self.current_health = 0
-
-
-@dataclass
-class BattleData:
-    active_mobs: set[str] = field(default_factory=set)
-    defeated_mobs: set[str] = field(default_factory=set)
-
-    def defeat(self, mob: Mob | str) -> None:
-        name = mob.name if isinstance(mob, Mob) else mob
-        if name in self.active_mobs:
-            self.active_mobs.remove(name)
-            self.defeated_mobs.add(name)
-
-    def is_defeated(self, mob: Mob | str) -> bool:
-        name = mob.name if isinstance(mob, Mob) else mob
-
-        return name in self.defeated_mobs
-
-    def is_active(self, mob: Mob | str) -> bool:
-        name = mob.name if isinstance(mob, Mob) else mob
-        return name in self.active_mobs
-
-    def add_to_battle(self, *mobs: Mob | str) -> None:
-        names = {mob.name if isinstance(mob, Mob) else mob for mob in mobs}
-        self.active_mobs.update(names)
-
-    def remove_from_battle(self, *mobs: Mob | str) -> None:
-        names = {mob.name if isinstance(mob, Mob) else mob for mob in mobs}
-        self.active_mobs.difference_update(names)
-        self.defeated_mobs.difference_update(names)
 
 
 @dataclass
@@ -201,3 +146,106 @@ class BattleGround:
     def check_victory(self, label: str) -> None:
         if self.is_victory:
             renpy.jump(label)
+
+
+@dataclass
+class Item:
+    title: str
+    icon: str
+    image: str
+    quantity: int = 1
+    description: str | None = None
+
+    def use(self) -> None:
+        pass
+
+
+@dataclass
+class Inventory:
+    _items: list[Item] = field(default_factory=list, init=False)
+    _slots_number: int = field(default=6, init=False)
+    _row_size: int = field(default=6, init=False)
+
+    def __post_init__(self) -> None:
+        if self._slots_number < 1 or self._row_size < 1:
+            raise ValueError("slots_number and row_size must be greater than 1")
+        if self._slots_number % self._row_size:
+            raise ValueError("slots_number must be a multiple of row_size")
+
+    @property
+    def rows(self) -> int:
+        return self._slots_number // self._row_size
+
+    @property
+    def columns(self) -> int:
+        return self._row_size
+
+    @property
+    def slots_number(self) -> int:
+        return self._slots_number
+
+    @property
+    def items(self) -> list[Item]:
+        return self._items
+
+    def increase_slots(self, number: int) -> None:
+        if (self._slots_number + number) % self._row_size:
+            raise ValueError("slots_number must be a multiple of row_size")
+
+        self._slots_number += number
+
+    def decrease_slots(self, number: int) -> None:
+        if self._slots_number - number < 1:
+            raise ValueError("slots_number must be greater than 1")
+        if (self._slots_number - number) % self._row_size:
+            raise ValueError("slots_number must be a multiple of row_size")
+
+        self._slots_number -= number
+
+    def set_row_size(self, number: int) -> None:
+        if number < 1:
+            raise ValueError("row_size must be greater than 1")
+        if self._slots_number % number:
+            raise ValueError("slots_number must be a multiple of row_size")
+
+        self._row_size = number
+
+    def add_item(self, item: Item) -> None:
+        index = next((idx for idx, element in enumerate(self._items) if element.title == item.title), None)
+
+        if index is not None:
+            self._items[index].quantity += 1
+        elif len(self._items) + 1 <= self.slots_number:
+            self._items.append(item)
+
+    def remove_item(self, position: int) -> None:
+        try:
+            self._items.pop(position)
+        except IndexError:
+            raise ValueError("Inventory items is empty or item position is out of range")
+
+    def is_slot_filled(self, position) -> bool:
+        return position < len(self._items)
+
+    def use_item(self, position) -> None:
+        try:
+            item = self._items[position]
+        except IndexError:
+            raise ValueError("Inventory items is empty or item position is out of range")
+
+        item.quantity -= 1
+
+        item.use()
+
+        if item.quantity <= 0:
+            self.remove_item(position)
+
+    def show_item_screen(self, position: int) -> None:
+        if self.is_slot_filled(position):
+            renpy.show_screen("item_screen", inventory=self, position=position)
+
+    def toggle_inventory(self):
+        if renpy.get_screen("inventory_screen"):
+            renpy.hide_screen("inventory_screen")
+        else:
+            renpy.show_screen("inventory_screen", inventory=self)
