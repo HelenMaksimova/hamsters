@@ -1,5 +1,16 @@
 # 10_test_battle.rpy
 
+init python:
+    def add_item(num: int):
+        items_map = {
+            1: ("Предмет_01", "inventory/item_01_icon.png", "inventory/item_01.png"),
+            2: ("Предмет_02", "inventory/item_02_icon.png", "inventory/item_02.png"),
+            3: ("Предмет_03", "inventory/item_03_icon.png", "inventory/item_03.png"),
+            4: ("Предмет_04", "inventory/item_04_icon.png", "inventory/item_04.png"),
+        }
+        params = items_map[num]
+        inventory.add_item(Item(*params))
+
 screen battle_choice_screen():
     modal True
 
@@ -18,7 +29,19 @@ screen battle_screen(battle):
                 Hide(), Jump("test_battle_exploring")
             ]
 
-    grid battle.rows_number battle.columns_number:
+        textbutton "Добавить Предмет_01":
+            action Function(add_item, 1)
+
+        textbutton "Добавить Предмет_02":
+            action Function(add_item, 2)
+
+        textbutton "Добавить Предмет_03":
+            action Function(add_item, 3)
+
+        textbutton "Добавить Предмет_04":
+            action Function(add_item, 4)
+
+    grid battle.columns_number battle.rows_number:
         spacing 10
         xalign 0.5
         yalign 0.5
