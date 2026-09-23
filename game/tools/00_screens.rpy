@@ -1,18 +1,18 @@
 # 00_screens.rpy
 
-screen image_window(img):
-    vbox:
-        add img
-        xalign 0.5
-        yalign 0.1
-
-
 transform inventory_slide:
     on show:
         yoffset 500
         easein 0.3 yoffset 0
     on hide:
         easeout 0.3 yoffset 500
+
+
+screen image_window_screen(img):
+    vbox:
+        add img
+        xalign 0.5
+        yalign 0.1
 
 
 screen inventory_screen (inventory):
