@@ -11,23 +11,13 @@ init python:
         params = items_map[num]
         inventory.add_item(Item(*params))
 
-screen battle_choice_screen():
-    modal True
-
-    vbox:
-        button:
-            style "battle_button"
-            action [Hide(), Jump("test_battle")]
-
 
 screen battle_screen(battle):
     modal True
 
     vbox:
         textbutton "Выйти":
-            action [
-                Hide(), Jump("test_battle_exploring")
-            ]
+            action Hide()
 
         textbutton "Добавить Предмет_01":
             action Function(add_item, 1)
@@ -63,24 +53,17 @@ screen battle_screen(battle):
 label victory:
     hide screen battle_screen
     "Вы победили!"
-    jump test_battle_exploring
-
-
-label test_battle_exploring:
-    scene bg gray_screen
-    show screen battle_choice_screen
-    pause
-    return
-
+    jump test
 
 label test_battle:
+    scene bg gray_screen
+
     $ battle = BattleGround(
-        (0, 1, 2, 3),
+        (0, 1, 2),
         (
             "test_battle/battle_value_0.png",
             "test_battle/battle_value_1.png",
             "test_battle/battle_value_2.png",
-            "test_battle/battle_value_3.png",
         ),
         rows_number=4,
         columns_number=4

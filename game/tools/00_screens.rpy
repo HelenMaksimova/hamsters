@@ -8,6 +8,20 @@ transform inventory_slide:
         easeout 0.3 yoffset 500
 
 
+screen test_screen():
+    modal True
+
+    vbox:
+        spacing 15
+        xalign 0.5
+        yalign 0.5
+
+        textbutton "Комната Артёма":
+            action [Hide(), Jump("artem_room")]
+
+        textbutton "Боёвка":
+            action [Hide(), Jump("test_battle")]
+
 screen image_window_screen(img):
     vbox:
         add img

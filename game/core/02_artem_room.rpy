@@ -27,14 +27,14 @@ label artem_room_exploring:
 label artem_room_hamster_photo():
     show screen image_window_screen('hamster_photo')
     artem sad 'Уже два года прошло, а мне всё ещё грустно...'
-    hide screen image_window
+    hide screen image_window_screen
     jump artem_room_exploring
 
 label artem_room_go_sleep():
     menu:
         'Идти спать':
             artem 'Пожалуй, пора баиньки'
-            jump test_battle_exploring
+            jump test
         'Пока рано ложиться':
             jump artem_room_exploring
 
