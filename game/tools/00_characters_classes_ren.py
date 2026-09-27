@@ -25,6 +25,7 @@ class Player:
     _bonus_damage: int = field(default=0, init=False)
     _bonus_armor: int = field(default=0, init=False)
     max_hp: int
+    battle_icon: str
 
     def __post_init__(self):
         self._current_hp = self.max_hp
@@ -83,6 +84,7 @@ class Player:
 class Mob:
     name: str
     max_hp: int
+    battle_icon: str
     current_hp: int = 0
     damage: int = 1
 

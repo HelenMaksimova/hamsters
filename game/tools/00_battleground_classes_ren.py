@@ -19,8 +19,6 @@ def hit(player: Player, mob: Mob) -> None:
     mob.take_damage(player.damage)
 
 
-
-
 CARDS_MAP = {
     0: ("battle/battle_value_0.png", defence),
     1: ("battle/battle_value_1.png", hit),

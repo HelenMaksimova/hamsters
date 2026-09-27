@@ -46,6 +46,11 @@ screen battle_screen(battle):
                 xalign 0.5
                 xsize 274
                 ysize 274
+                add battle.mob.battle_icon:
+                    xalign 0.5
+                    yalign 1.0
+                    xoffset -10
+                    yoffset -10
 
             hbox:
                 xalign 0.5
@@ -93,6 +98,11 @@ screen battle_screen(battle):
                 xalign 0.5
                 xsize 274
                 ysize 274
+                add battle.player.battle_icon:
+                    xalign 0.5
+                    yalign 1.0
+                    xoffset -10
+                    yoffset -10
 
             hbox:
                 xalign 0.5
@@ -142,7 +152,7 @@ label defeated:
 label test_battle:
     scene bg battle_forest_screen
 
-    $ mob = Mob("Улитколич", 4)
+    $ mob = Mob("Лесной Котёнок", 4, "battle/forest_kitten.png")
 
     $ battle = BattleGround(
         (0, 1, 2),
