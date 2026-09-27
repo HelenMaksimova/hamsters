@@ -1,5 +1,10 @@
 ﻿label start:
-    jump artem_room
+    jump test
     pause
     return
 
+label test:
+    scene bg gray_screen
+    show screen test_screen
+    pause
+    return
