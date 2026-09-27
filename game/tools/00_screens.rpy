@@ -1,18 +1,32 @@
 # 00_screens.rpy
 
-screen image_window(img):
-    vbox:
-        add img
-        xalign 0.5
-        yalign 0.1
-
-
 transform inventory_slide:
     on show:
         yoffset 500
         easein 0.3 yoffset 0
     on hide:
         easeout 0.3 yoffset 500
+
+
+screen test_screen():
+    modal True
+
+    vbox:
+        spacing 15
+        xalign 0.5
+        yalign 0.5
+
+        textbutton "Комната Артёма":
+            action [Hide(), Jump("artem_room")]
+
+        textbutton "Боёвка":
+            action [Hide(), Jump("test_battle")]
+
+screen image_window_screen(img):
+    vbox:
+        add img
+        xalign 0.5
+        yalign 0.1
 
 
 screen inventory_screen (inventory):
