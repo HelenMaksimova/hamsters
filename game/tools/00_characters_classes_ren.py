@@ -22,8 +22,10 @@ class Player:
     _current_hp: int = field(default=0, init=False)
     _damage: int = field(default=1, init=False)
     _armor: int = field(default=0, init=False)
+    _heal: int = field(default=1, init=False)
     _bonus_damage: int = field(default=0, init=False)
     _bonus_armor: int = field(default=0, init=False)
+    _bonus_heal: int = field(default=0, init=False)
     max_hp: int
     battle_icon: str
 
@@ -43,8 +45,17 @@ class Player:
         return self._damage + self._bonus_damage
 
     @property
+    def heal(self) -> int:
+        return self._heal + self._bonus_heal
+
+    @property
     def current_hp(self) -> int:
         return self._current_hp
+
+    def restore_health(self, full: bool = False):
+        self._current_hp += self.heal
+        if self._current_hp > self.max_hp or full:
+            self._current_hp = self.max_hp
 
     def take_damage(self, damage: int):
         damage -= self.armor
@@ -67,6 +78,12 @@ class Player:
         if self._armor < 0:
             self._armor = 0
 
+    def change_base_heal(self, number: int) -> None:
+        self._heal += number
+
+        if self._heal < 1:
+            self._heal = 1
+
     def change_bonus_damage(self, number: int) -> None:
         self._bonus_damage += number
 
@@ -78,6 +95,12 @@ class Player:
 
         if self._bonus_armor < 0:
             self._bonus_armor = 0
+
+    def change_bonus_heal(self, number: int) -> None:
+        self._bonus_heal += number
+
+        if self._bonus_heal < 0:
+            self._bonus_heal = 0
 
 
 @dataclass
