@@ -22,6 +22,9 @@ screen test_screen():
         textbutton "Боёвка":
             action [Hide(), Jump("test_battle")]
 
+        textbutton "Экипировка":
+            action [Hide(), Jump("test_player_equipment")]
+
 screen image_window_screen(img):
     vbox:
         add img
@@ -29,7 +32,7 @@ screen image_window_screen(img):
         yalign 0.1
 
 
-screen inventory_screen (inventory):
+screen inventory_screen():
     zorder 98
     modal True
 
@@ -74,11 +77,9 @@ screen inventory_screen (inventory):
                                 size 24
 
 
-screen item_screen(inventory, position):
+screen item_screen(item):
     zorder 99
     modal True
-
-    $ item = inventory.items[position]
 
     add Solid("#00000080")
 
@@ -113,6 +114,121 @@ screen item_screen(inventory, position):
                     add item.image:
                         xalign 0.5
 
-                    textbutton "Использовать":
+                    if item.type == "potion":
+                        textbutton "Использовать":
+                            xalign 0.5
+                            action [Hide(), Function(inventory.use_item, position)]
+
+                    elif item.is_active:
+                        textbutton "Снять":
+                            xalign 0.5
+                            action [Hide(), Function(player_equipment.take_off, item)]
+                            sensitive not inventory.is_full
+
+                    elif not item.is_active:
+                        textbutton "Экипировать":
+                            xalign 0.5
+                            action [Hide(), Function(player_equipment.take_on, item)]
+
+
+screen player_equipment_screen():
+    modal True
+
+    frame:
+        background "inventory/player_equipment_card.png"
+        xalign 0.5
+        yalign 0.5
+        xsize 524
+        ysize 624
+        yoffset -200
+
+        button:
+            style "inventory_slot"
+            xalign 0.5
+            yalign 0.05
+            sensitive not player_equipment.head.is_empty
+            if not player_equipment.head.is_empty:
+                add player_equipment.head.item.icon:
+                    xalign 0.5
+                    yalign 0.5
+                action Show("item_screen", item=player_equipment.head.item)
+
+        hbox:
+            xalign 0.5
+            yalign 0.3
+            spacing 60
+
+            frame:
+                background "inventory/pe_armor_icon.png"
+                xalign 0.5
+                xsize 124
+                ysize 124
+                text "[player.armor]":
+                    style "battle_parameter_text"
+                    size 40
+
+            frame:
+                background "inventory/pe_health_icon.png"
+                xalign 0.5
+                xsize 124
+                ysize 124
+                text "[player.current_hp]/[player.max_hp]":
+                    style "battle_parameter_text"
+                    size 40
+
+            frame:
+                background "inventory/pe_damage_icon.png"
+                xalign 0.5
+                xsize 124
+                ysize 124
+                text "[player.damage]":
+                    style "battle_parameter_text"
+                    size 40
+
+        hbox:
+            xalign 0.5
+            yalign 0.55
+            spacing 40
+
+            button:
+                style "inventory_slot"
+                sensitive not player_equipment.hands[0].is_empty
+                if not player_equipment.hands[0].is_empty:
+                    add player_equipment.hands[0].item.icon:
                         xalign 0.5
-                        action [Hide(), Function(inventory.use_item, position)]
+                        yalign 0.5
+                    action Show("item_screen", item=player_equipment.hands[0].item)
+
+            button:
+                style "inventory_slot"
+                sensitive not player_equipment.body.is_empty
+                if not player_equipment.body.is_empty:
+                    add player_equipment.body.item.icon:
+                        xalign 0.5
+                        yalign 0.5
+                    action Show("item_screen", item=player_equipment.body.item)
+
+            button:
+                style "inventory_slot"
+                sensitive not player_equipment.hands[1].is_empty
+                if not player_equipment.hands[1].is_empty:
+                    add player_equipment.hands[1].item.icon:
+                        xalign 0.5
+                        yalign 0.5
+                    action Show("item_screen", item=player_equipment.hands[1].item)
+
+        hbox:
+            xalign 0.5
+            yalign 0.9
+            spacing 10
+
+            for idx in range(player_equipment.accessories_slots_number):
+                button:
+                    style "inventory_slot"
+                    sensitive not player_equipment.accessories[idx].is_empty
+                    if not player_equipment.accessories[idx].is_empty:
+                        add player_equipment.accessories[idx].item.icon:
+                            xalign 0.5
+                            yalign 0.5
+                        action Show("item_screen", item=player_equipment.accessories[idx].item)
+
