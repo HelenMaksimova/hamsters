@@ -59,48 +59,40 @@ class Player:
 
     def take_damage(self, damage: int):
         damage -= self.armor
-        if damage < 0:
-            damage = 0
+        damage = max(damage, 0)
 
         self._current_hp -= damage
-        if self._current_hp < 0:
-            self._current_hp = 0
+        self._current_hp = max(self._current_hp, 0)
 
     def change_base_damage(self, number: int) -> None:
         self._damage += number
 
-        if self._damage < 1:
-            self._damage = 1
+        self._damage = max(self._damage, 1)
 
     def change_base_armor(self, number: int) -> None:
         self._armor += number
 
-        if self._armor < 0:
-            self._armor = 0
+        self._armor = max(self._armor, 0)
 
     def change_base_heal(self, number: int) -> None:
         self._heal += number
 
-        if self._heal < 1:
-            self._heal = 1
+        self._heal = max(self._heal, 1)
 
     def change_bonus_damage(self, number: int) -> None:
         self._bonus_damage += number
 
-        if self._bonus_damage < 0:
-            self._bonus_damage = 0
+        self._bonus_damage = max(self._bonus_damage, 0)
 
     def change_bonus_armor(self, number: int) -> None:
         self._bonus_armor += number
 
-        if self._bonus_armor < 0:
-            self._bonus_armor = 0
+        self._bonus_armor = max(self._bonus_armor, 0)
 
     def change_bonus_heal(self, number: int) -> None:
         self._bonus_heal += number
 
-        if self._bonus_heal < 0:
-            self._bonus_heal = 0
+        self._bonus_heal = max(self._bonus_heal, 0)
 
 
 @dataclass
@@ -116,8 +108,7 @@ class Mob:
 
     def take_damage(self, damage: int):
         self.current_hp -= damage
-        if self.current_hp < 0:
-            self.current_hp = 0
+        self.current_hp = max(self.current_hp, 0)
 
 
 @dataclass

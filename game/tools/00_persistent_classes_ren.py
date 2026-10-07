@@ -1,7 +1,8 @@
 """renpy
 init -999 python:
 """
-from dataclasses import dataclass, asdict, field
+
+from dataclasses import asdict, dataclass, field
 from typing import Self
 
 
@@ -29,4 +30,3 @@ class BasePersistentData:
 
         data.pop("_key", None)
         return cls(key, **data)
-

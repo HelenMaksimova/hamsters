@@ -1,9 +1,10 @@
 """renpy
 init -997 python:
 """
+
 from dataclasses import dataclass, field
 from itertools import chain
-from typing import Literal, Callable
+from typing import Literal
 
 
 def player_armor_take_on_action():
@@ -31,7 +32,7 @@ ACTIONS = {
     "player_armor_take_off_action": player_armor_take_off_action,
     "player_weapon_take_on_action": player_weapon_take_on_action,
     "player_weapon_take_off_action": player_weapon_take_off_action,
-    "player_heal_potion_action": player_heal_potion_action
+    "player_heal_potion_action": player_heal_potion_action,
 }
 
 
@@ -56,8 +57,7 @@ class Item(BaseItem):
     def use(self) -> None:
         self.quantity -= 1
 
-        if self.quantity < 0:
-            self.quantity = 0
+        self.quantity = max(self.quantity, 0)
 
         if self.action:
             ACTIONS[self.action]()
@@ -151,7 +151,14 @@ class Inventory:
         if self.is_full:
             return
 
-        index = next((idx for idx, element in enumerate(self._items) if element.title == item.title), None)
+        index = next(
+            (
+                idx
+                for idx, element in enumerate(self._items)
+                if element.title == item.title
+            ),
+            None,
+        )
         if item.is_equipment:
             self._items.append(item)
         elif index is not None:
@@ -159,15 +166,21 @@ class Inventory:
         elif len(self._items) + 1 <= self.slots_number:
             self._items.append(item)
 
-    def remove_item(self, position: int | None = None, item: Item | None = None) -> None:
+    def remove_item(
+        self, position: int | None = None, item: Item | None = None
+    ) -> None:
         if position is None and item is None:
-            raise ValueError("One of parameters: position or item must be defined")
+            raise ValueError(
+                "One of parameters: position or item must be defined"
+            )
 
         if position is not None:
             try:
                 self._items.pop(position)
             except IndexError:
-                raise ValueError("Inventory items is empty or item position is out of range")
+                raise ValueError(
+                    "Inventory items is empty or item position is out of range"
+                )
         elif item is not None:
             try:
                 self._items.remove(item)
@@ -184,7 +197,9 @@ class Inventory:
         try:
             item = self._items[position]
         except IndexError:
-            raise ValueError("Inventory items is empty or item position is out of range")
+            raise ValueError(
+                "Inventory items is empty or item position is out of range"
+            )
 
         item.use()
 
@@ -227,7 +242,9 @@ class PlayerEquipment:
     _body: PlayerEquipmentSlot | None = field(default=None, init=False)
     _head: PlayerEquipmentSlot | None = field(default=None, init=False)
     _hands: list[PlayerEquipmentSlot] = field(default_factory=list, init=False)
-    _accessories: list[PlayerEquipmentSlot] = field(default_factory=list, init=False)
+    _accessories: list[PlayerEquipmentSlot] = field(
+        default_factory=list, init=False
+    )
 
     def __post_init__(self) -> None:
         self._create_slots()
@@ -260,16 +277,20 @@ class PlayerEquipment:
     @property
     def equipment(self) -> list[EquipmentItem]:
         return [
-            slot.item for slot
-            in chain(self._accessories, self._hands, (self._body,), (self._head,))
+            slot.item
+            for slot in chain(
+                self._accessories, self._hands, (self._body,), (self._head,)
+            )
             if slot.item
         ]
 
     @property
     def slots(self) -> list[PlayerEquipmentSlot]:
         return [
-            slot for slot
-            in chain(self._accessories, self._hands, (self._body,), (self._head,))
+            slot
+            for slot in chain(
+                self._accessories, self._hands, (self._body,), (self._head,)
+            )
             if slot.item
         ]
 
@@ -278,15 +299,16 @@ class PlayerEquipment:
         for slot in slots:
             if slot.is_empty:
                 return slot
-        else:
-            slots[0].take_off()
-            return slots[0]
+        slots[0].take_off()
+        return slots[0]
 
     def _create_slots(self) -> None:
         self._body = PlayerEquipmentSlot()
         self._head = PlayerEquipmentSlot()
         self._hands = [PlayerEquipmentSlot() for _ in range(2)]
-        self._accessories = [PlayerEquipmentSlot() for _ in range(self.accessories_slots_number)]
+        self._accessories = [
+            PlayerEquipmentSlot() for _ in range(self.accessories_slots_number)
+        ]
 
     def take_on(self, item: EquipmentItem) -> None:
         value = getattr(self, self.attrs_map.get(item.type))

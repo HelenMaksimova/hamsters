@@ -1,9 +1,11 @@
 """renpy
 init -996 python:
 """
+
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Literal, Callable
-from random import shuffle, sample
+from random import sample, shuffle
+from typing import Literal
 
 
 def heal(player: Player, mob: Mob) -> None:
@@ -45,17 +47,25 @@ class BattleGround:
     card_values: tuple[int, ...]
     mob: Mob
     player: Player
-    clickable_states: set[str] = field(default_factory=lambda: {"closed",})
+    clickable_states: set[str] = field(
+        default_factory=lambda: {
+            "closed",
+        }
+    )
     rows_number: int = 2
     columns_number: int = 2
 
     def __post_init__(self):
-        if self.columns_number <= 0 or self.rows_number <=0:
-            raise ValueError("The number of rows and columns must be greater than 0")
+        if self.columns_number <= 0 or self.rows_number <= 0:
+            raise ValueError(
+                "The number of rows and columns must be greater than 0"
+            )
         elif self.cards_number % 2:
             raise ValueError("The number of cards must be even")
         elif len(self.card_values) * 2 > self.cards_number:
-            raise ValueError("The double number of card values must be less than or equal to number of cards")
+            raise ValueError(
+                "The double number of card values must be less than or equal to number of cards"
+            )
 
         self._create_cards()
 
@@ -96,11 +106,21 @@ class BattleGround:
         for _ in range(cycle_number):
             for value in self.card_values:
                 image, action = CARDS_MAP[value]
-                self._cards.extend((BattleCard(value, image, action), BattleCard(value, image, action)))
+                self._cards.extend(
+                    (
+                        BattleCard(value, image, action),
+                        BattleCard(value, image, action),
+                    )
+                )
 
         for value in sample(self.card_values, k=rest_number):
             image, action = CARDS_MAP[value]
-            self._cards.extend((BattleCard(value, image, action), BattleCard(value, image, action)))
+            self._cards.extend(
+                (
+                    BattleCard(value, image, action),
+                    BattleCard(value, image, action),
+                )
+            )
 
         shuffle(self._cards)
 
