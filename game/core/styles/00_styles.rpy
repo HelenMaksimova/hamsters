@@ -24,3 +24,10 @@ style battle_parameter_text:
     xoffset -3
     font "fonts/custom_font_1.otf"
     size 50
+
+transform inventory_slide:
+    on show:
+        yoffset 500
+        easein 0.3 yoffset 0
+    on hide:
+        easeout 0.3 yoffset 500

@@ -1,36 +1,4 @@
-# 00_screens.rpy
-
-transform inventory_slide:
-    on show:
-        yoffset 500
-        easein 0.3 yoffset 0
-    on hide:
-        easeout 0.3 yoffset 500
-
-
-screen test_screen():
-    modal True
-
-    vbox:
-        spacing 15
-        xalign 0.5
-        yalign 0.5
-
-        textbutton "Комната Артёма":
-            action [Hide(), Jump("artem_room")]
-
-        textbutton "Боёвка":
-            action [Hide(), Jump("test_battle")]
-
-        textbutton "Экипировка":
-            action [Hide(), Jump("test_player_equipment")]
-
-screen image_window_screen(img):
-    vbox:
-        add img
-        xalign 0.5
-        yalign 0.1
-
+# 00_inventory_screens.rpy
 
 screen inventory_screen():
     zorder 98
@@ -231,4 +199,3 @@ screen player_equipment_screen():
                             xalign 0.5
                             yalign 0.5
                         action Show("item_screen", item=player_equipment.accessories[idx].item)
-

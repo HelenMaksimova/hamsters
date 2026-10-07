@@ -1,4 +1,4 @@
-# 02_artem_room.rpy
+# 02_artem_room_story.rpy
 
 label artem_room:
     scene bg artem_room
@@ -37,19 +37,3 @@ label artem_room_go_sleep():
             jump test
         'Пока рано ложиться':
             jump artem_room_exploring
-
-
-screen artem_room_exploring_screen():
-    modal True
-
-    button:
-        style "paw_button"
-        xalign 0.1
-        yalign 0.1
-        action [Hide(), Jump("artem_room_hamster_photo")]
-
-    button:
-        style "paw_button"
-        xalign 0.1
-        yalign 0.7
-        action [Hide(), Jump("artem_room_go_sleep")]
