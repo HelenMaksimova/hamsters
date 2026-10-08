@@ -9,8 +9,7 @@ from typing import Literal
 
 
 def heal(player: Player, mob: Mob) -> None:
-    if player.current_hp < player.max_hp:
-        player._current_hp += 1
+    player.restore_health()
 
 
 def defence(player: Player, mob: Mob) -> None:

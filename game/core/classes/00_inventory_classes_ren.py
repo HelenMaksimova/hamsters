@@ -24,7 +24,19 @@ def player_weapon_take_off_action():
 
 
 def player_heal_potion_action():
-    player.change_bonus_heal(3)
+    player.change_bonus_heal(2)
+
+
+def add_potion() -> None:
+    inventory.add_item(
+        Item(
+            "Лечебное зелье",
+            "inventory/potion_item_icon.png",
+            "inventory/potion_item.png",
+            "potion",
+            action="player_heal_potion_action",
+        )
+    )
 
 
 ACTIONS = {
@@ -193,14 +205,7 @@ class Inventory:
     def is_slot_filled(self, position: int) -> bool:
         return position < len(self._items)
 
-    def use_item(self, position: int) -> None:
-        try:
-            item = self._items[position]
-        except IndexError:
-            raise ValueError(
-                "Inventory items is empty or item position is out of range"
-            )
-
+    def use_item(self, item: Item) -> None:
         item.use()
 
         if item.quantity <= 0:

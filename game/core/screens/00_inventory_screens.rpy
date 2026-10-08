@@ -85,7 +85,7 @@ screen item_screen(item):
                     if item.type == "potion":
                         textbutton "Использовать":
                             xalign 0.5
-                            action [Hide(), Function(inventory.use_item, position)]
+                            action [Hide(), Function(inventory.use_item, item)]
 
                     elif item.is_active:
                         textbutton "Снять":
