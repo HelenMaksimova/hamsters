@@ -112,13 +112,26 @@ screen battle_screen(battle):
                     text "[battle.player.armor]":
                         style "battle_parameter_text"
 
-            frame:
-                background "battle/damage_icon.png"
+            hbox:
                 xalign 0.5
-                xsize 150
-                ysize 150
-                text "[battle.player.damage]":
-                    style "battle_parameter_text"
+                spacing 10
+
+                frame:
+                    background "battle/heal_icon.png"
+                    xalign 0.5
+                    xsize 150
+                    ysize 150
+                    text "[battle.player.heal]":
+                        style "battle_parameter_text"
+
+                frame:
+                    background "battle/damage_icon.png"
+                    xalign 0.5
+                    xsize 150
+                    ysize 150
+                    text "[battle.player.damage]":
+                        style "battle_parameter_text"
+
 
     if battle.pending_close:
             timer 1.0 action Function(battle.close_pending)

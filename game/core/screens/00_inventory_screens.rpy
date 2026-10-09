@@ -107,13 +107,13 @@ screen player_equipment_screen():
         xalign 0.5
         yalign 0.5
         xsize 524
-        ysize 624
-        yoffset -200
+        ysize 774
+        yoffset -100
 
         button:
             style "inventory_slot"
             xalign 0.5
-            yalign 0.05
+            yalign 0.1
             sensitive not player_equipment.head.is_empty
             if not player_equipment.head.is_empty:
                 add player_equipment.head.item.icon:
@@ -123,39 +123,7 @@ screen player_equipment_screen():
 
         hbox:
             xalign 0.5
-            yalign 0.3
-            spacing 60
-
-            frame:
-                background "inventory/pe_armor_icon.png"
-                xalign 0.5
-                xsize 124
-                ysize 124
-                text "[player.armor]":
-                    style "battle_parameter_text"
-                    size 40
-
-            frame:
-                background "inventory/pe_health_icon.png"
-                xalign 0.5
-                xsize 124
-                ysize 124
-                text "[player.current_hp]/[player.max_hp]":
-                    style "battle_parameter_text"
-                    size 40
-
-            frame:
-                background "inventory/pe_damage_icon.png"
-                xalign 0.5
-                xsize 124
-                ysize 124
-                text "[player.damage]":
-                    style "battle_parameter_text"
-                    size 40
-
-        hbox:
-            xalign 0.5
-            yalign 0.55
+            yalign 0.35
             spacing 40
 
             button:
@@ -187,7 +155,7 @@ screen player_equipment_screen():
 
         hbox:
             xalign 0.5
-            yalign 0.9
+            yalign 0.65
             spacing 10
 
             for idx in range(player_equipment.accessories_slots_number):
@@ -199,3 +167,44 @@ screen player_equipment_screen():
                             xalign 0.5
                             yalign 0.5
                         action Show("item_screen", item=player_equipment.accessories[idx].item)
+
+        hbox:
+            xalign 0.5
+            yalign 0.9
+            spacing 10
+
+            frame:
+                background "inventory/pe_armor_icon.png"
+                xalign 0.5
+                xsize 104
+                ysize 104
+                text "[player.armor]":
+                    style "battle_parameter_text"
+                    size 30
+
+            frame:
+                background "inventory/pe_health_icon.png"
+                xalign 0.5
+                xsize 104
+                ysize 104
+                text "[player.current_hp]/[player.max_hp]":
+                    style "battle_parameter_text"
+                    size 25
+
+            frame:
+                background "inventory/pe_heal_icon.png"
+                xalign 0.5
+                xsize 104
+                ysize 104
+                text "[player.heal]":
+                    style "battle_parameter_text"
+                    size 30
+
+            frame:
+                background "inventory/pe_damage_icon.png"
+                xalign 0.5
+                xsize 104
+                ysize 104
+                text "[player.damage]":
+                    style "battle_parameter_text"
+                    size 30
