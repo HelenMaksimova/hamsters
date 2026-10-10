@@ -8,14 +8,14 @@ screen battle_screen(battle):
         yalign 0.0
 
         textbutton "X":
-            action [Hide(), Jump("test")]
+            action [Function(battle.clear_context), Hide(), Jump("test")]
 
     vbox:
         yoffset 10
         xalign 0.5
         yalign 0.0
 
-        text "[battle.mob.name]":
+        text "[context.battle.mob.name]":
             font "fonts/custom_font_1.otf"
             size 60
 
@@ -34,7 +34,7 @@ screen battle_screen(battle):
                 xalign 0.5
                 xsize 274
                 ysize 274
-                add battle.mob.battle_icon:
+                add context.battle.mob.battle_icon:
                     xalign 0.5
                     yalign 1.0
                     xoffset -10
@@ -49,7 +49,7 @@ screen battle_screen(battle):
                     xalign 0.5
                     xsize 150
                     ysize 150
-                    text "[battle.mob.current_hp]":
+                    text "[context.battle.mob.current_hp]":
                         style "battle_parameter_text"
 
                 frame:
@@ -57,7 +57,7 @@ screen battle_screen(battle):
                     xalign 0.5
                     xsize 150
                     ysize 150
-                    text "[battle.mob.damage]":
+                    text "[context.battle.mob.damage]":
                         style "battle_parameter_text"
 
 
@@ -86,7 +86,7 @@ screen battle_screen(battle):
                 xalign 0.5
                 xsize 274
                 ysize 274
-                add battle.player.battle_icon:
+                add player.battle_icon:
                     xalign 0.5
                     yalign 1.0
                     xoffset -10
@@ -101,7 +101,7 @@ screen battle_screen(battle):
                     xalign 0.5
                     xsize 150
                     ysize 150
-                    text "[battle.player.current_hp]":
+                    text "[player.current_hp]":
                         style "battle_parameter_text"
 
                 frame:
@@ -109,7 +109,7 @@ screen battle_screen(battle):
                     xalign 0.5
                     xsize 150
                     ysize 150
-                    text "[battle.player.armor]":
+                    text "[player.armor]":
                         style "battle_parameter_text"
 
             hbox:
@@ -121,7 +121,7 @@ screen battle_screen(battle):
                     xalign 0.5
                     xsize 150
                     ysize 150
-                    text "[battle.player.heal]":
+                    text "[player.heal]":
                         style "battle_parameter_text"
 
                 frame:
@@ -129,7 +129,7 @@ screen battle_screen(battle):
                     xalign 0.5
                     xsize 150
                     ysize 150
-                    text "[battle.player.damage]":
+                    text "[player.damage]":
                         style "battle_parameter_text"
 
 

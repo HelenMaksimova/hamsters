@@ -35,6 +35,9 @@ def add_potion() -> None:
             "inventory/potion_item.png",
             "potion",
             action="player_heal_potion_action",
+            usable_states=[
+                "in_battle",
+            ],
         )
     )
 
@@ -54,12 +57,18 @@ class BaseItem:
     icon: str
     image: str
     type: Literal["body", "hand", "head", "accessory", "potion"]
+    usable_states: list[str] = field(default_factory=list)
     description: str | None = None
     action: str | None = None
 
     @property
     def is_equipment(self) -> bool:
         return self.type in ["body", "hand", "head", "accessory"]
+
+    def check_usable(self, state: str) -> bool:
+        if state in self.usable_states:
+            return getattr(context.game_state, state, False)
+        return True
 
 
 @dataclass
@@ -151,6 +160,13 @@ class Inventory:
 
         self._slots_number -= number
 
+    def check_slot_usable(self, position: int) -> bool:
+        if self.is_slot_filled(position):
+            item = self._items[position]
+            return item.check_usable("in_battle")
+
+        return False
+
     def set_row_size(self, number: int) -> None:
         if number < 1:
             raise ValueError("row_size must be greater than 1")
@@ -215,7 +231,8 @@ class Inventory:
         if self.is_slot_filled(position):
             renpy.show_screen("item_screen", item=self.items[position])
 
-    def toggle_screen(self) -> None:
+    @staticmethod
+    def toggle_screen() -> None:
         if renpy.get_screen("inventory_screen"):
             renpy.hide_screen("inventory_screen")
         else:
@@ -244,12 +261,10 @@ class PlayerEquipmentSlot:
 @dataclass
 class PlayerEquipment:
     accessories_slots_number: int = 2
-    _body: PlayerEquipmentSlot | None = field(default=None, init=False)
-    _head: PlayerEquipmentSlot | None = field(default=None, init=False)
-    _hands: list[PlayerEquipmentSlot] = field(default_factory=list, init=False)
-    _accessories: list[PlayerEquipmentSlot] = field(
-        default_factory=list, init=False
-    )
+    _body: PlayerEquipmentSlot | None = field(init=False)
+    _head: PlayerEquipmentSlot | None = field(init=False)
+    _hands: list[PlayerEquipmentSlot] = field(init=False)
+    _accessories: list[PlayerEquipmentSlot] = field(init=False)
 
     def __post_init__(self) -> None:
         self._create_slots()

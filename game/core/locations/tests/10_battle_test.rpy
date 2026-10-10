@@ -14,11 +14,11 @@ label test_battle:
     scene bg battle_forest_screen
 
     $ mob = Mob("Лесной Котёнок", 4, "battle/forest_kitten.png")
+    $ context.battle.mob = mob
+    $ context.game_state.in_battle = True
 
     $ battle = BattleGround(
         (0, 1, 2),
-        mob=mob,
-        player=player,
         rows_number=4,
         columns_number=4
     )

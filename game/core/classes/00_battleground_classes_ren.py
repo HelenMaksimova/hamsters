@@ -8,16 +8,16 @@ from random import sample, shuffle
 from typing import Literal
 
 
-def heal(player: Player, mob: Mob) -> None:
+def heal() -> None:
     player.restore_health()
 
 
-def defence(player: Player, mob: Mob) -> None:
+def defence() -> None:
     player.change_bonus_armor(1)
 
 
-def hit(player: Player, mob: Mob) -> None:
-    mob.take_damage(player.damage)
+def hit() -> None:
+    context.battle.mob.take_damage(player.damage)
 
 
 CARDS_MAP = {
@@ -44,8 +44,6 @@ class BattleGround:
     pending_close: bool = field(default=False, init=False)
     pending_recreate: bool = field(default=False, init=False)
     card_values: tuple[int, ...]
-    mob: Mob
-    player: Player
     clickable_states: set[str] = field(
         default_factory=lambda: {
             "closed",
@@ -82,11 +80,11 @@ class BattleGround:
 
     @property
     def is_victory(self) -> bool:
-        return self.mob.current_hp <= 0
+        return context.battle.mob.current_hp <= 0
 
     @property
     def is_defeated(self) -> bool:
-        return self.player.current_hp <= 0
+        return player.current_hp <= 0
 
     @property
     def current_card(self) -> BattleCard | None:
@@ -134,7 +132,7 @@ class BattleGround:
         self.pending_recreate = False
 
     def use_card_action(self):
-        self.current_card.action(self.player, self.mob)
+        self.current_card.action()
 
     def flip_card(self, position: int) -> None:
         flipped_card = self._cards[position]
@@ -152,8 +150,8 @@ class BattleGround:
                 self.clear_current_card()
             else:
                 self.pending_close = True
-                self.player.take_damage(self.mob.damage)
-                self.player.change_bonus_armor(-1)
+                player.take_damage(context.battle.mob.damage)
+                player.change_bonus_armor(-1)
                 self.clear_current_card()
 
     def close_pending(self) -> None:
@@ -165,8 +163,15 @@ class BattleGround:
 
     def check_victory(self, victory_label: str, defeated_label: str) -> None:
         if self.is_victory:
+            (self.clear_context(),)
             renpy.jump(victory_label)
         elif self.is_defeated:
+            self.clear_context()
             renpy.jump(defeated_label)
         elif self.matched_count == self.cards_number:
             self.pending_recreate = True
+
+    @staticmethod
+    def clear_context() -> None:
+        context.battle.mob = None
+        context.game_state.in_battle = False
