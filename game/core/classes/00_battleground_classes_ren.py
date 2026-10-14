@@ -161,13 +161,15 @@ class BattleGround:
                     card.state = "closed"
             self.pending_close = False
 
-    def check_victory(self, victory_label: str, defeated_label: str) -> None:
+    def check_victory(self) -> None:
         if self.is_victory:
-            (self.clear_context(),)
-            renpy.jump(victory_label)
-        elif self.is_defeated:
+            renpy.hide_screen("battle_screen")
             self.clear_context()
-            renpy.jump(defeated_label)
+            renpy.show_screen("battle_result_screen", is_victory=True)
+        elif self.is_defeated:
+            renpy.hide_screen("battle_screen")
+            self.clear_context()
+            renpy.show_screen("battle_result_screen", is_victory=False)
         elif self.matched_count == self.cards_number:
             self.pending_recreate = True
 

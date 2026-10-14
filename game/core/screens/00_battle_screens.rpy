@@ -69,7 +69,7 @@ screen battle_screen(battle):
             for i in range(battle.cards_number):
                 button:
                     style "battle_button"
-                    action [Function(battle.flip_card, i), Function(battle.check_victory, "victory", "defeated")]
+                    action [Function(battle.flip_card, i), Function(battle.check_victory)]
 
                     if battle.cards[i].state in {"opened", "matched"}:
                         background battle.cards[i].image
@@ -138,3 +138,29 @@ screen battle_screen(battle):
 
     if battle.pending_recreate:
             timer 1.0 action Function(battle.recreate_field)
+
+
+screen battle_result_screen(is_victory):
+    modal True
+
+    $ message_text = "Вы победили!" if is_victory else "Вы проиграли!"
+
+    frame:
+        background "battle/battle_result_frame.png"
+        xsize 908
+        ysize 393
+        xalign 0.5
+        yalign 0.5
+
+        vbox:
+            spacing 30
+            xalign 0.5
+            yalign 0.5
+
+            text message_text:
+                style "battle_parameter_text"
+                xalign 0.5
+
+            textbutton "ОК":
+                xalign 0.5
+                action [Hide(), Jump("test")]
