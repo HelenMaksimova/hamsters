@@ -8,14 +8,14 @@ screen battle_screen(battle):
         yalign 0.0
 
         textbutton "X":
-            action [Hide(), Jump("test")]
+            action [Function(battle.clear_context), Hide(), Jump("test")]
 
     vbox:
         yoffset 10
         xalign 0.5
         yalign 0.0
 
-        text "[battle.mob.name]":
+        text "[context.battle.mob.name]":
             font "fonts/custom_font_1.otf"
             size 60
 
@@ -34,7 +34,7 @@ screen battle_screen(battle):
                 xalign 0.5
                 xsize 274
                 ysize 274
-                add battle.mob.battle_icon:
+                add context.battle.mob.battle_icon:
                     xalign 0.5
                     yalign 1.0
                     xoffset -10
@@ -49,7 +49,7 @@ screen battle_screen(battle):
                     xalign 0.5
                     xsize 150
                     ysize 150
-                    text "[battle.mob.current_hp]":
+                    text "[context.battle.mob.current_hp]":
                         style "battle_parameter_text"
 
                 frame:
@@ -57,7 +57,7 @@ screen battle_screen(battle):
                     xalign 0.5
                     xsize 150
                     ysize 150
-                    text "[battle.mob.damage]":
+                    text "[context.battle.mob.damage]":
                         style "battle_parameter_text"
 
 
@@ -69,7 +69,7 @@ screen battle_screen(battle):
             for i in range(battle.cards_number):
                 button:
                     style "battle_button"
-                    action [Function(battle.flip_card, i), Function(battle.check_victory, "victory", "defeated")]
+                    action [Function(battle.flip_card, i), Function(battle.check_victory)]
 
                     if battle.cards[i].state in {"opened", "matched"}:
                         background battle.cards[i].image
@@ -86,7 +86,7 @@ screen battle_screen(battle):
                 xalign 0.5
                 xsize 274
                 ysize 274
-                add battle.player.battle_icon:
+                add player.battle_icon:
                     xalign 0.5
                     yalign 1.0
                     xoffset -10
@@ -101,7 +101,7 @@ screen battle_screen(battle):
                     xalign 0.5
                     xsize 150
                     ysize 150
-                    text "[battle.player.current_hp]":
+                    text "[player.current_hp]":
                         style "battle_parameter_text"
 
                 frame:
@@ -109,7 +109,7 @@ screen battle_screen(battle):
                     xalign 0.5
                     xsize 150
                     ysize 150
-                    text "[battle.player.armor]":
+                    text "[player.armor]":
                         style "battle_parameter_text"
 
             hbox:
@@ -121,7 +121,7 @@ screen battle_screen(battle):
                     xalign 0.5
                     xsize 150
                     ysize 150
-                    text "[battle.player.heal]":
+                    text "[player.heal]":
                         style "battle_parameter_text"
 
                 frame:
@@ -129,7 +129,7 @@ screen battle_screen(battle):
                     xalign 0.5
                     xsize 150
                     ysize 150
-                    text "[battle.player.damage]":
+                    text "[player.damage]":
                         style "battle_parameter_text"
 
 
@@ -138,3 +138,29 @@ screen battle_screen(battle):
 
     if battle.pending_recreate:
             timer 1.0 action Function(battle.recreate_field)
+
+
+screen battle_result_screen(is_victory):
+    modal True
+
+    $ message_text = "Вы победили!" if is_victory else "Вы проиграли!"
+
+    frame:
+        background "battle/battle_result_frame.png"
+        xsize 908
+        ysize 393
+        xalign 0.5
+        yalign 0.5
+
+        vbox:
+            spacing 30
+            xalign 0.5
+            yalign 0.5
+
+            text message_text:
+                style "battle_parameter_text"
+                xalign 0.5
+
+            textbutton "ОК":
+                xalign 0.5
+                action [Hide(), Jump("test")]
