@@ -66,32 +66,26 @@ class Player:
 
     def change_base_damage(self, number: int) -> None:
         self._damage += number
-
         self._damage = max(self._damage, 1)
 
     def change_base_armor(self, number: int) -> None:
         self._armor += number
-
         self._armor = max(self._armor, 0)
 
     def change_base_heal(self, number: int) -> None:
         self._heal += number
-
         self._heal = max(self._heal, 1)
 
     def change_bonus_damage(self, number: int) -> None:
         self._bonus_damage += number
-
         self._bonus_damage = max(self._bonus_damage, 0)
 
     def change_bonus_armor(self, number: int) -> None:
         self._bonus_armor += number
-
         self._bonus_armor = max(self._bonus_armor, 0)
 
     def change_bonus_heal(self, number: int) -> None:
         self._bonus_heal += number
-
         self._bonus_heal = max(self._bonus_heal, 0)
 
 
@@ -114,4 +108,12 @@ class Mob:
 @dataclass
 class NPCharacter:
     name: str
-    friendship_score: int = 0
+    _friendship_score: int = field(default=0, init=False)
+
+    @property
+    def friendship_score(self) -> int:
+        return self._friendship_score
+
+    def change_friendship_score(self, number: int) -> None:
+        self._friendship_score += number
+        self._friendship_score = max(self._friendship_score, 0)

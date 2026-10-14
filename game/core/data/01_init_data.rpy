@@ -8,6 +8,7 @@ define mother_voice = Character('Голос мамы', color="#d39e61", image='d
 default inventory = Inventory()
 default player = Player(10, "battle/player_battle_icon.png")
 default player_equipment = PlayerEquipment()
+default context = Context()
 
 default short_sword = EquipmentItem(
         "Короткий меч",

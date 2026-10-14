@@ -25,7 +25,7 @@ screen inventory_screen():
                 button:
                     style "inventory_slot"
                     action Function(inventory.show_item_screen, idx)
-                    sensitive inventory.is_slot_filled(idx)
+                    sensitive inventory.check_slot_usable(idx)
 
                     if inventory.is_slot_filled(idx):
                         $ item = inventory.items[idx]

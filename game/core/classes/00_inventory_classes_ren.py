@@ -29,23 +29,30 @@ def player_heal_potion_action():
 
 def add_potion() -> None:
     inventory.add_item(
-        Item(
+        PotionItem(
             "Лечебное зелье",
             "inventory/potion_item_icon.png",
             "inventory/potion_item.png",
-            "potion",
             action="player_heal_potion_action",
+            usable_states=[
+                "in_battle",
+            ],
         )
     )
 
 
-ACTIONS = {
+EQUIPMENT_ACTIONS = {
     "player_armor_take_on_action": player_armor_take_on_action,
     "player_armor_take_off_action": player_armor_take_off_action,
     "player_weapon_take_on_action": player_weapon_take_on_action,
     "player_weapon_take_off_action": player_weapon_take_off_action,
+}
+
+POTION_ACTIONS = {
     "player_heal_potion_action": player_heal_potion_action,
 }
+
+PRESENT_ACTIONS = {}
 
 
 @dataclass
@@ -53,7 +60,8 @@ class BaseItem:
     title: str
     icon: str
     image: str
-    type: Literal["body", "hand", "head", "accessory", "potion"]
+    type: Literal["body", "hand", "head", "accessory", "potion", "present"]
+    usable_states: list[str] = field(default_factory=list)
     description: str | None = None
     action: str | None = None
 
@@ -61,9 +69,17 @@ class BaseItem:
     def is_equipment(self) -> bool:
         return self.type in ["body", "hand", "head", "accessory"]
 
+    def check_usable(self, state: str) -> bool:
+        if state in self.usable_states:
+            return getattr(context.game_state, state, False)
+        return True
+
 
 @dataclass
-class Item(BaseItem):
+class PotionItem(BaseItem):
+    type: Literal["body", "hand", "head", "accessory", "potion", "present"] = (
+        "potion"
+    )
     quantity: int = 1
 
     def use(self) -> None:
@@ -72,7 +88,23 @@ class Item(BaseItem):
         self.quantity = max(self.quantity, 0)
 
         if self.action:
-            ACTIONS[self.action]()
+            POTION_ACTIONS[self.action]()
+
+
+@dataclass
+class PresentItem(BaseItem):
+    type: Literal["body", "hand", "head", "accessory", "potion", "present"] = (
+        "present"
+    )
+    quantity: int = 1
+
+    def use(self) -> None:
+        self.quantity -= 1
+
+        self.quantity = max(self.quantity, 0)
+
+        if self.action:
+            PRESENT_ACTIONS[self.action]()
 
 
 @dataclass
@@ -83,19 +115,19 @@ class EquipmentItem(BaseItem):
 
     def use(self) -> None:
         if self.action:
-            ACTIONS[self.action]()
+            EQUIPMENT_ACTIONS[self.action]()
 
     def take_on(self):
         self.is_active = True
 
         if self.take_on_action:
-            ACTIONS[self.take_on_action]()
+            EQUIPMENT_ACTIONS[self.take_on_action]()
 
     def take_off(self):
         self.is_active = False
 
         if self.take_off_action:
-            ACTIONS[self.take_off_action]()
+            EQUIPMENT_ACTIONS[self.take_off_action]()
 
     @property
     def quantity(self) -> int:
@@ -104,7 +136,7 @@ class EquipmentItem(BaseItem):
 
 @dataclass
 class Inventory:
-    _items: list[Item] = field(default_factory=list, init=False)
+    _items: list[PotionItem] = field(default_factory=list, init=False)
     _slots_number: int = field(default=6, init=False)
     _row_size: int = field(default=6, init=False)
 
@@ -127,14 +159,14 @@ class Inventory:
         return self._slots_number
 
     @property
-    def items(self) -> list[Item]:
+    def items(self) -> list[PotionItem]:
         return self._items
 
     @property
     def is_full(self) -> bool:
         return len(self._items) >= self._slots_number
 
-    def items_by_type(self, type_: str) -> list[Item]:
+    def items_by_type(self, type_: str) -> list[PotionItem]:
         return [item for item in self._items if item.type == type_]
 
     def increase_slots(self, number: int) -> None:
@@ -151,6 +183,13 @@ class Inventory:
 
         self._slots_number -= number
 
+    def check_slot_usable(self, position: int) -> bool:
+        if self.is_slot_filled(position):
+            item = self._items[position]
+            return item.check_usable("in_battle")
+
+        return False
+
     def set_row_size(self, number: int) -> None:
         if number < 1:
             raise ValueError("row_size must be greater than 1")
@@ -159,7 +198,7 @@ class Inventory:
 
         self._row_size = number
 
-    def add_item(self, item: Item) -> None:
+    def add_item(self, item: PotionItem) -> None:
         if self.is_full:
             return
 
@@ -179,7 +218,7 @@ class Inventory:
             self._items.append(item)
 
     def remove_item(
-        self, position: int | None = None, item: Item | None = None
+        self, position: int | None = None, item: PotionItem | None = None
     ) -> None:
         if position is None and item is None:
             raise ValueError(
@@ -205,7 +244,7 @@ class Inventory:
     def is_slot_filled(self, position: int) -> bool:
         return position < len(self._items)
 
-    def use_item(self, item: Item) -> None:
+    def use_item(self, item: PotionItem) -> None:
         item.use()
 
         if item.quantity <= 0:
@@ -215,7 +254,8 @@ class Inventory:
         if self.is_slot_filled(position):
             renpy.show_screen("item_screen", item=self.items[position])
 
-    def toggle_screen(self) -> None:
+    @staticmethod
+    def toggle_screen() -> None:
         if renpy.get_screen("inventory_screen"):
             renpy.hide_screen("inventory_screen")
         else:
@@ -244,12 +284,10 @@ class PlayerEquipmentSlot:
 @dataclass
 class PlayerEquipment:
     accessories_slots_number: int = 2
-    _body: PlayerEquipmentSlot | None = field(default=None, init=False)
-    _head: PlayerEquipmentSlot | None = field(default=None, init=False)
-    _hands: list[PlayerEquipmentSlot] = field(default_factory=list, init=False)
-    _accessories: list[PlayerEquipmentSlot] = field(
-        default_factory=list, init=False
-    )
+    _body: PlayerEquipmentSlot | None = field(init=False)
+    _head: PlayerEquipmentSlot | None = field(init=False)
+    _hands: list[PlayerEquipmentSlot] = field(init=False)
+    _accessories: list[PlayerEquipmentSlot] = field(init=False)
 
     def __post_init__(self) -> None:
         self._create_slots()
@@ -326,7 +364,8 @@ class PlayerEquipment:
             if slot.item == item:
                 slot.take_off()
 
-    def toggle_screen(self) -> None:
+    @staticmethod
+    def toggle_screen() -> None:
         if renpy.get_screen("player_equipment_screen"):
             renpy.hide_screen("player_equipment_screen")
         else:
